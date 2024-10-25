@@ -1,15 +1,24 @@
-import java.io.IOException;
-import java.util.StringTokenizer;
+import java.io.IOException; // Xử lý ngoại lệ I/O
+import java.util.Iterator; // Sử dụng iterator cho Reduce function
+import java.util.StringTokenizer; // Xử lý chuỗi đầu vào trong Mapper
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.io.IntWritable; // Định dạng dữ liệu đầu ra là Integer (Writable)
+import org.apache.hadoop.io.LongWritable; // Định dạng dữ liệu đầu vào là Long (Writable)
+import org.apache.hadoop.io.Text; // Định dạng dữ liệu đầu vào và đầu ra là chuỗi (Writable)
+
+import org.apache.hadoop.mapred.JobClient; // Chạy job Hadoop
+import org.apache.hadoop.mapred.JobConf; // Thiết lập cấu hình job Hadoop
+import org.apache.hadoop.mapred.MapReduceBase; // Lớp cơ bản cho Mapper và Reducer
+import org.apache.hadoop.mapred.Mapper; // Định nghĩa Mapper
+import org.apache.hadoop.mapred.Reducer; // Định nghĩa Reducer
+import org.apache.hadoop.mapred.OutputCollector; // Thu thập output từ Map hoặc Reduce
+import org.apache.hadoop.mapred.Reporter; // Báo cáo trạng thái của job Hadoop
+
+import org.apache.hadoop.mapred.FileInputFormat; // Định nghĩa định dạng input
+import org.apache.hadoop.mapred.FileOutputFormat; // Định nghĩa định dạng output
+import org.apache.hadoop.mapred.TextInputFormat; // Định nghĩa định dạng input là text
+import org.apache.hadoop.mapred.TextOutputFormat; // Định nghĩa định dạng output là text
+import org.apache.hadoop.fs.Path; // Xử lý đường dẫn trong HDFS
 
 
 public class ProcessUnits {
