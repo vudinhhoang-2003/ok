@@ -1,47 +1,43 @@
-import java.io.IOException; // Xử lý ngoại lệ I/O
-import java.util.Iterator; // Sử dụng iterator cho Reduce function
-import java.util.StringTokenizer; // Xử lý chuỗi đầu vào trong Mapper
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.StringTokenizer;
 
-import org.apache.hadoop.io.IntWritable; // Định dạng dữ liệu đầu ra là Integer (Writable)
-import org.apache.hadoop.io.LongWritable; // Định dạng dữ liệu đầu vào là Long (Writable)
-import org.apache.hadoop.io.Text; // Định dạng dữ liệu đầu vào và đầu ra là chuỗi (Writable)
-
-import org.apache.hadoop.mapred.JobClient; // Chạy job Hadoop
-import org.apache.hadoop.mapred.JobConf; // Thiết lập cấu hình job Hadoop
-import org.apache.hadoop.mapred.MapReduceBase; // Lớp cơ bản cho Mapper và Reducer
-import org.apache.hadoop.mapred.Mapper; // Định nghĩa Mapper
-import org.apache.hadoop.mapred.Reducer; // Định nghĩa Reducer
-import org.apache.hadoop.mapred.OutputCollector; // Thu thập output từ Map hoặc Reduce
-import org.apache.hadoop.mapred.Reporter; // Báo cáo trạng thái của job Hadoop
-
-import org.apache.hadoop.mapred.FileInputFormat; // Định nghĩa định dạng input
-import org.apache.hadoop.mapred.FileOutputFormat; // Định nghĩa định dạng output
-import org.apache.hadoop.mapred.TextInputFormat; // Định nghĩa định dạng input là text
-import org.apache.hadoop.mapred.TextOutputFormat; // Định nghĩa định dạng output là text
-import org.apache.hadoop.fs.Path; // Xử lý đường dẫn trong HDFS
-
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.Mapper;
+import org.apache.hadoop.mapred.MapReduceBase;
+import org.apache.hadoop.mapred.Reducer;
+import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.FileOutputFormat;
 
 public class ProcessUnits {
 
     // Mapper class
-    public static class E_EMapper extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
+    public static class E_Mapper extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
         // Map function
         public void map(LongWritable key, Text value, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
             String line = value.toString();
             String lasttoken = null;
             StringTokenizer s = new StringTokenizer(line, "\t");
             String year = s.nextToken();
-            
+
             while (s.hasMoreTokens()) {
                 lasttoken = s.nextToken();
             }
+
             int avgprice = Integer.parseInt(lasttoken);
             output.collect(new Text(year), new IntWritable(avgprice));
         }
     }
 
     // Reducer class
-    public static class E_EReduce extends MapReduceBase implements Reducer<Text, IntWritable, Text, IntWritable> {
+    public static class E_Reduce extends MapReduceBase implements Reducer<Text, IntWritable, Text, IntWritable> {
         // Reduce function
         public void reduce(Text key, Iterator<IntWritable> values, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
             int maxavg = 30;
@@ -63,12 +59,12 @@ public class ProcessUnits {
         conf.setOutputKeyClass(Text.class);
         conf.setOutputValueClass(IntWritable.class);
 
-        conf.setMapperClass(E_EMapper.class);
-        conf.setCombinerClass(E_EReduce.class);
-        conf.setReducerClass(E_EReduce.class);
+        conf.setMapperClass(E_Mapper.class);
+        conf.setCombinerClass(E_Reduce.class);
+        conf.setReducerClass(E_Reduce.class);
 
-        conf.setInputFormat(TextInputFormat.class);
-        conf.setOutputFormat(TextOutputFormat.class);
+        conf.setInputFormat(org.apache.hadoop.mapred.TextInputFormat.class);
+        conf.setOutputFormat(org.apache.hadoop.mapred.TextOutputFormat.class);
 
         FileInputFormat.setInputPaths(conf, new Path(args[0]));
         FileOutputFormat.setOutputPath(conf, new Path(args[1]));
