@@ -145,6 +145,18 @@ ORDER BY
     total_warehouse_sales DESC;
 
 
+SELECT 
+    item_description,
+    SUM(retail_sales) AS total_retail_sales,
+    SUM(warehouse_sales) AS total_warehouse_sales
+FROM 
+    retail_sales_data
+WHERE 
+    warehouse_sales > 10000
+GROUP BY 
+    item_description
+ORDER BY 
+    total_warehouse_sales DESC;
 
 
 
