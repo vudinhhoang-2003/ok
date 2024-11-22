@@ -72,3 +72,29 @@ public class ProcessUnits {
         JobClient.runJob(conf);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+    CREATE TABLE IF NOT EXISTS retail_sales_data (
+    year INT,
+    month INT,
+    supplier STRING,
+    item_code STRING,
+    item_description STRING,
+    item_type STRING,
+    retail_sales DOUBLE,
+    retail_transfers DOUBLE,
+    warehouse_sales DOUBLE
+)
+ROW FORMAT DELIMITED 
+FIELDS TERMINATED BY ',' 
+STORED AS TEXTFILE
+TBLPROPERTIES ("skip.header.line.count"="1");
