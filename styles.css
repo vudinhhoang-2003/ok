@@ -129,27 +129,20 @@ Xác định nhà cung cấp nào có doanh số cao nhất để tối ưu hợ
 
 
 
-    5. Phân tích sự thay đổi doanh số bán lẻ theo từng năm và loại sản phẩm
-sql
-Copy code
-SELECT 
-    year,
+    SELECT 
     item_type,
     SUM(retail_sales) AS total_retail_sales,
-    SUM(warehouse_sales) AS total_warehouse_sales,
-    SUM(retail_transfers) AS total_retail_transfers
+    SUM(warehouse_sales) AS total_warehouse_sales
 FROM 
     retail_sales_data
+WHERE 
+    year = 2020
 GROUP BY 
-    year, item_type
+    item_type
+HAVING 
+    SUM(warehouse_sales) > 30000
 ORDER BY 
-    year ASC, total_retail_sales DESC;
-Giải thích:
-GROUP BY year, item_type: Dữ liệu được nhóm theo năm và loại sản phẩm.
-SUM: Tính tổng doanh số bán lẻ, kho và chuyển kho.
-ORDER BY year ASC, total_retail_sales DESC: Sắp xếp theo năm (tăng dần), sau đó theo doanh số bán lẻ (giảm dần).
-Mục đích:
-Phân tích xu hướng thay đổi doanh số của từng loại sản phẩm qua các năm để đưa ra quyết định chiến lược dài hạn.
+    total_warehouse_sales DESC;
 
 
 
