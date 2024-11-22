@@ -150,3 +150,52 @@ SUM: Tính tổng doanh số bán lẻ, kho và chuyển kho.
 ORDER BY year ASC, total_retail_sales DESC: Sắp xếp theo năm (tăng dần), sau đó theo doanh số bán lẻ (giảm dần).
 Mục đích:
 Phân tích xu hướng thay đổi doanh số của từng loại sản phẩm qua các năm để đưa ra quyết định chiến lược dài hạn.
+
+
+
+
+
+
+    3. Tìm sản phẩm có doanh số cao nhất trong từng loại sản phẩm
+sql
+Copy code
+SELECT 
+    item_type,
+    item_description,
+    MAX(retail_sales) AS max_retail_sales
+FROM 
+    retail_sales_data
+GROUP BY 
+    item_type, item_description
+ORDER BY 
+    item_type, max_retail_sales DESC;
+Giải thích:
+MAX(retail_sales): Lấy giá trị doanh số bán lẻ cao nhất của từng sản phẩm.
+GROUP BY item_type, item_description: Nhóm dữ liệu theo loại sản phẩm và mô tả sản phẩm.
+ORDER BY item_type: Sắp xếp theo loại sản phẩm, sau đó theo doanh số giảm dần.
+Mục đích:
+Tìm sản phẩm nổi bật nhất trong mỗi loại sản phẩm để tập trung quảng bá.
+
+
+
+
+    6. Tìm nhà cung cấp đóng góp nhiều nhất vào tổng doanh số bán lẻ và kho
+sql
+Copy code
+SELECT 
+    supplier,
+    SUM(retail_sales) + SUM(warehouse_sales) AS total_sales
+FROM 
+    retail_sales_data
+GROUP BY 
+    supplier
+ORDER BY 
+    total_sales DESC
+LIMIT 5;
+Giải thích:
+SUM(retail_sales) + SUM(warehouse_sales): Tính tổng doanh số bán lẻ và doanh số kho của từng nhà cung cấp.
+GROUP BY supplier: Nhóm dữ liệu theo từng nhà cung cấp.
+ORDER BY total_sales DESC: Sắp xếp theo tổng doanh số giảm dần.
+LIMIT 5: Chỉ lấy 5 nhà cung cấp hàng đầu.
+Mục đích:
+Xác định các nhà cung cấp quan trọng nhất trong chuỗi cung ứng để duy trì mối quan hệ tốt.
