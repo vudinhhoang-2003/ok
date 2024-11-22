@@ -98,3 +98,55 @@ ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ',' 
 STORED AS TEXTFILE
 TBLPROPERTIES ("skip.header.line.count"="1");
+
+
+
+
+
+
+
+    1. Tính tổng doanh số bán lẻ và doanh số kho theo từng nhà cung cấp
+sql
+Copy code
+SELECT 
+    supplier,
+    SUM(retail_sales) AS total_retail_sales,
+    SUM(warehouse_sales) AS total_warehouse_sales
+FROM 
+    retail_sales_data
+GROUP BY 
+    supplier
+ORDER BY 
+    total_retail_sales DESC, total_warehouse_sales DESC;
+Giải thích:
+SUM: Tính tổng doanh số bán lẻ (retail_sales) và doanh số kho (warehouse_sales) cho từng nhà cung cấp (supplier).
+GROUP BY supplier: Dữ liệu được nhóm theo từng nhà cung cấp.
+ORDER BY: Sắp xếp kết quả theo tổng doanh số bán lẻ giảm dần, sau đó là tổng doanh số kho.
+Mục đích:
+Xác định nhà cung cấp nào có doanh số cao nhất để tối ưu hợp tác.
+
+
+
+
+
+    5. Phân tích sự thay đổi doanh số bán lẻ theo từng năm và loại sản phẩm
+sql
+Copy code
+SELECT 
+    year,
+    item_type,
+    SUM(retail_sales) AS total_retail_sales,
+    SUM(warehouse_sales) AS total_warehouse_sales,
+    SUM(retail_transfers) AS total_retail_transfers
+FROM 
+    retail_sales_data
+GROUP BY 
+    year, item_type
+ORDER BY 
+    year ASC, total_retail_sales DESC;
+Giải thích:
+GROUP BY year, item_type: Dữ liệu được nhóm theo năm và loại sản phẩm.
+SUM: Tính tổng doanh số bán lẻ, kho và chuyển kho.
+ORDER BY year ASC, total_retail_sales DESC: Sắp xếp theo năm (tăng dần), sau đó theo doanh số bán lẻ (giảm dần).
+Mục đích:
+Phân tích xu hướng thay đổi doanh số của từng loại sản phẩm qua các năm để đưa ra quyết định chiến lược dài hạn.
