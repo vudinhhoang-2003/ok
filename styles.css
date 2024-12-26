@@ -80,127 +80,27 @@ public class ProcessUnits {
 
 
 
-
-
-
-    CREATE TABLE IF NOT EXISTS retail_sales_data (
-    year INT,
-    month INT,
-    supplier STRING,
-    item_code STRING,
-    item_description STRING,
-    item_type STRING,
-    retail_sales DOUBLE,
-    retail_transfers DOUBLE,
-    warehouse_sales DOUBLE
-)
-ROW FORMAT DELIMITED 
-FIELDS TERMINATED BY ',' 
-STORED AS TEXTFILE
-TBLPROPERTIES ("skip.header.line.count"="1");
-
-
-
-
-
-
-
-    1. Tính tổng doanh số bán lẻ và doanh số kho theo từng nhà cung cấp
-sql
-Copy code
+-- Phân nhóm theo các khoảng của Spending Score
 SELECT 
-    supplier,
-    SUM(retail_sales) AS total_retail_sales,
-    SUM(warehouse_sales) AS total_warehouse_sales
-FROM 
-    retail_sales_data
-GROUP BY 
-    supplier
-ORDER BY 
-    total_retail_sales DESC, total_warehouse_sales DESC;
-Giải thích:
-SUM: Tính tổng doanh số bán lẻ (retail_sales) và doanh số kho (warehouse_sales) cho từng nhà cung cấp (supplier).
-GROUP BY supplier: Dữ liệu được nhóm theo từng nhà cung cấp.
-ORDER BY: Sắp xếp kết quả theo tổng doanh số bán lẻ giảm dần, sau đó là tổng doanh số kho.
-Mục đích:
-Xác định nhà cung cấp nào có doanh số cao nhất để tối ưu hợp tác.
+    CASE 
+        WHEN Spending_Score BETWEEN 0 AND 20 THEN '0-20'
+        WHEN Spending_Score BETWEEN 21 AND 40 THEN '21-40'
+        WHEN Spending_Score BETWEEN 41 AND 60 THEN '41-60'
+        WHEN Spending_Score BETWEEN 61 AND 80 THEN '61-80'
+        ELSE '81-100'
+    END AS Spending_Score_Range,
+    COUNT(*) AS count
+FROM customer_data
+GROUP BY Spending_Score_Range;
 
-
-
-
-
-    SELECT 
-    item_type,
-    SUM(retail_sales) AS total_retail_sales,
-    SUM(warehouse_sales) AS total_warehouse_sales
-FROM 
-    retail_sales_data
-WHERE 
-    year = 2020
-GROUP BY 
-    item_type
-HAVING 
-    SUM(warehouse_sales) > 30000
-ORDER BY 
-    total_warehouse_sales DESC;
-
-
+-- Phân nhóm theo các khoảng của Annual Income
 SELECT 
-    item_description,
-    SUM(retail_sales) AS total_retail_sales,
-    SUM(warehouse_sales) AS total_warehouse_sales
-FROM 
-    retail_sales_data
-WHERE 
-    warehouse_sales > 10000
-GROUP BY 
-    item_description
-ORDER BY 
-    total_warehouse_sales DESC;
-
-
-
-
-    3. Tìm sản phẩm có doanh số cao nhất trong từng loại sản phẩm
-sql
-Copy code
-SELECT 
-    item_type,
-    item_description,
-    MAX(retail_sales) AS max_retail_sales
-FROM 
-    retail_sales_data
-GROUP BY 
-    item_type, item_description
-ORDER BY 
-    item_type, max_retail_sales DESC;
-Giải thích:
-MAX(retail_sales): Lấy giá trị doanh số bán lẻ cao nhất của từng sản phẩm.
-GROUP BY item_type, item_description: Nhóm dữ liệu theo loại sản phẩm và mô tả sản phẩm.
-ORDER BY item_type: Sắp xếp theo loại sản phẩm, sau đó theo doanh số giảm dần.
-Mục đích:
-Tìm sản phẩm nổi bật nhất trong mỗi loại sản phẩm để tập trung quảng bá.
-
-
-
-
-    6. Tìm nhà cung cấp đóng góp nhiều nhất vào tổng doanh số bán lẻ và kho
-sql
-Copy code
-SELECT 
-    supplier,
-    SUM(retail_sales) + SUM(warehouse_sales) AS total_sales
-FROM 
-    retail_sales_data
-GROUP BY 
-    supplier
-ORDER BY 
-    total_sales DESC
-LIMIT 5;
-Giải thích:
-SUM(retail_sales) + SUM(warehouse_sales): Tính tổng doanh số bán lẻ và doanh số kho của từng nhà cung cấp.
-GROUP BY supplier: Nhóm dữ liệu theo từng nhà cung cấp.
-ORDER BY total_sales DESC: Sắp xếp theo tổng doanh số giảm dần.
-LIMIT 5: Chỉ lấy 5 nhà cung cấp hàng đầu.
-Mục đích:
-Xác định các nhà cung cấp quan trọng nhất trong chuỗi cung ứng để duy trì mối quan hệ tốt.
+    CASE 
+        WHEN Annual_Income BETWEEN 0 AND 20 THEN '0-20k$'
+        WHEN Annual_Income BETWEEN 21 AND 40 THEN '21-40k$'
+        WHEN Annual_Income BETWEEN 41 AND 60 THEN '41-60k$'
+        ELSE '60k$+'
+    END AS Annual_Income_Range,
+    COUNT(*) AS count
+FROM customer_data
+GROUP BY Annual_Income_Range;
